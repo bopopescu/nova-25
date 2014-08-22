@@ -1039,7 +1039,17 @@ class ComputeAPI(object):
             filter_properties, admin_password=None, injected_files=None,
             requested_networks=None, security_groups=None,
             block_device_mapping=None, node=None, limits=None):
-        cctxt = self.client.prepare(server=host, version='3.23')
+	if not CONF.bypass_scheduler:
+            cctxt = self.client.prepare(server=host, version='3.23')
+	else:
+	    topic=instance.system_metadata['instance_type_name'].replace('.', '-')
+            #instance_type_topic = instance_type.name.replace('.', '-')
+            target = messaging.Target(topic=topic, version='3.0')
+            version_cap = self.VERSION_ALIASES.get(CONF.upgrade_levels.compute,
+                                               CONF.upgrade_levels.compute)
+            serializer = objects_base.NovaObjectSerializer()
+            self.client = self.get_client(target, version_cap, serializer)
+            cctxt = self.client.prepare(version='3.23')
         cctxt.cast(ctxt, 'build_and_run_instance', instance=instance,
                 image=image, request_spec=request_spec,
                 filter_properties=filter_properties,
