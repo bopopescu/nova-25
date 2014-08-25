@@ -1186,6 +1186,7 @@ class ComputeManager(manager.Manager):
         filter - Ram, Cores and Disk
         """
 
+#	import pudb;pu.db
         # Check if sufficient RAM is available.
         requested_ram = instance_type.memory_mb
         free_ram_mb = host_state['free_ram_mb']
@@ -1273,7 +1274,7 @@ class ComputeManager(manager.Manager):
 #		LOG.info("Test variable %s",self.rpcserver_flavor)
 #	except:
 #		self.rpcserver_flavor={}
-
+	self.update_available_resource(context)
         for instance_type in instance_types:
                 # Replace '.' in the flavor name with '-' to avoid conflicts in the
                 # messaging layer
@@ -1293,6 +1294,8 @@ class ComputeManager(manager.Manager):
 			self.rpcserver_flavor[instance_type_topic]=rpc.get_server(target,endpoints, serializer)
 			self.rpcserver_flavor[instance_type_topic].start()
 		else:
+			LOG.info(_("Stopping and Deleting RPC server for %s")
+                            % instance_type_topic)
 			if (instance_type_topic in self.rpcserver_flavor.keys()):
 				self.rpcserver_flavor[instance_type_topic].stop()
 				del self.rpcserver_flavor[instance_type_topic]
