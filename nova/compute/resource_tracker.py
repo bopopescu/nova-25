@@ -489,7 +489,7 @@ class ResourceTracker(object):
             self.pci_tracker.save(context)
 
     def _update_usage(self, resources, usage, sign=1):
-	import pudb;pu.db
+#	import pudb;pu.db
         mem_usage = usage['memory_mb']
 
         overhead = self.driver.estimate_instance_overhead(usage)
