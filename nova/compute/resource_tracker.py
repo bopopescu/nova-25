@@ -341,12 +341,15 @@ class ResourceTracker(object):
             resources['pci_stats'] = jsonutils.dumps(self.pci_tracker.stats)
         else:
             resources['pci_stats'] = jsonutils.dumps([])
-
         self._report_final_resource_view(resources)
 
         metrics = self._get_host_metrics(context, self.nodename)
         resources['metrics'] = jsonutils.dumps(metrics)
         self._sync_compute_node(context, resources)
+	self.resource=resources
+
+    def get_available_oldresource(self):
+	return self.resource
 
     def _sync_compute_node(self, context, resources):
         """Create or update the compute node DB record."""
@@ -486,6 +489,7 @@ class ResourceTracker(object):
             self.pci_tracker.save(context)
 
     def _update_usage(self, resources, usage, sign=1):
+	import pudb;pu.db
         mem_usage = usage['memory_mb']
 
         overhead = self.driver.estimate_instance_overhead(usage)
